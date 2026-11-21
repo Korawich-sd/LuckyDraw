@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- โหลดไฟล์ CSS -->
+  <link rel="stylesheet" href="tuh2025.css">
+
+  <!-- โหลด Font Awesome (จำเป็นสำหรับไอคอน) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <title>WHEEL OF TUH2025</title>
+</head>
+
+<body>
+
+  <section class="background-img">
+    <!-- <div id="wrap"> -->
+    <!-- Heading -->
+    <div class="header">
+      <h1>งานเลี้ยงส่งท้ายปีเก่า ต้อนรับปีใหม่ ประจำปี 2569</h1>
+      <p>"รพธ. ยิ้มรับปีใหม่หัวใจเดียวกัน"</p>
+    </div>
+
+    <audio id="audioPlayer" src="spinner.mp3" autoplay></audio>
+
+    <!-- ปุ่มกด Random -->
+    <div class="wheel-area">
+      <div class="wheel-container">
+        <div id="wheel"></div>
+        <button id="spinBtn">จับรางวัล</button>
+      </div>
+    </div>
+
+    <div class="results-container" id="resultsContainer">
+      <div class="results-header">
+        <h2>ผลการประกาศรางวัล ประจำปี 2569</h2>
+      </div>
+      <div class="boxscroll">
+        <div class="boxshow" id="boxshow" style="display: none; margin-top: 20px;">
+          <div class="column" style="width: 10%;">ลำดับที่สุ่ม</div>
+          <div class="column" style="width: 10%;">เลขที่ตำแหน่ง</div>
+          <div class="column" style="width: 18%;">ชื่อ</div>
+          <div class="column" style="width: 18%;">นามสกุล</div>
+          <div class="column" style="width: 20%;">ตำแหน่ง</div>
+          <div class="column" style="width: 25%;">สังกัด</div>
+        </div>
+
+        <div class="boxcontent" id="boxcontent">
+        </div>
+      </div>
+
+      <div class="results-actions">
+        <button class="btn btn-download" onclick="downloadSelectedCSV()">
+          <i class="fas fa-download"></i> ดาวน์โหลด
+        </button>
+        <button class="btn btn-credit" onclick="showCreditScene()">
+          <i class="fas fa-info-circle"></i> เปิดหน้าเครดิต
+        </button>
+        <button class="btn btn-close" onclick="clearData()">
+          <i class="fas fa-times"></i> ล้างข้อมูล
+        </button>
+      </div>
+    </div>
+    <!-- </div> -->
+  </section>
+
+
+  <!-- Config Modal -->
+  <!-- ================= CONFIG MODAL ================= -->
+
+  <div class="config-modal" id="configModal">
+    <h3>⚙️ ตั้งค่าข้อมูล</h3>
+
+    <div class="input-group">
+      <label for="csvFile">เลือกไฟล์ CSV รายชื่อเจ้าหน้าที่:</label>
+      <input type="file" id="csvFile" accept=".csv">
+    </div>
+
+    <div class="input-group">
+      <label for="totallist">จำนวนที่ต้องการสุ่ม:</label>
+      <input type="text" id="totallist" placeholder="ระบุจำนวน">
+    </div>
+
+    <div class="input-group">
+      <label>มูลค่ารางวัล:</label>
+      <div class="input-group-prize">
+        <input type="text" id="prizeValue" placeholder="ระบุมูลค่า">
+        <span>บาท</span>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn-process" onclick="savevalue()">บันทึก</button>
+      <button class="btn-clear" onclick="clearData()">ล้าง</button>
+    </div>
+  </div>
+
+  <!-- ================= SETTINGS BUTTON ================= -->
+
+  <button class="config-btn" id="configBtn" onclick="toggleConfig(event)">
+    <i class="fas fa-cog"></i>
+  </button>
+
+
+  <script>
+    const settingsModal = document.getElementById('settingsModal');
+    const wheel = document.getElementById("wheel");
+    const btn = document.getElementById("spinBtn");
+    const audio = document.getElementById("audioPlayer");
+
+    let allStaffData = [];
+    let selectedStaffData = [];
+
+
+    // ======================================
+    // GOOGLE APPS SCRIPT CONNECTION
+    // ======================================
+
+    // นำ URL ที่ได้จากการ Deploy มาใส่ตรงนี้
+    const API_URL = "https://script.google.com/macros/s/AKfycbzkLQCwNen5OquQnzndp86WZNTf7thvO6w8EDaoayxa8dsnLl9QmeSqrLNdvEgdgzPITQ/exec";
+
+    // ใช้สำหรับทดสอบเท่านั้น
+    // ห้ามใช้รหัสนี้กับข้อมูลจริง เพราะผู้เข้าชมเว็บไซต์
+    // สามารถตรวจดูรหัสจาก JavaScript ได้
+    const ADMIN_KEY = "qwerty";
+
+    let staffUploaded = false;
+
+
+    // ======================================
+    // ส่งไฟล์ CSV ไปยัง Google Sheets
+    // ======================================
+
+    async function uploadCsvToGoogle(csvFile) {
+
+      try {
+
+        const csvText = await csvFile.text();
+
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+          },
+          body: JSON.stringify({
+            action: "importStaff",
+            adminKey: ADMIN_KEY,
+            csv: csvText
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error("ไม่สามารถเชื่อมต่อ Apps Script ได้");
+        }
+
+        const result = await response.json();
+
+        if (!result.success) {
+          throw new Error(result.message);
+        }
+
+        return result.data;
+
+      } catch (error) {
+
+        console.error("Upload error:", error);
+
+        throw error;
+
+      }
+    }
+
+
+
+
+    // ======================================
+    // บันทึกการตั้งค่าและอัปโหลด CSV
+    // ======================================
+
+    async function savevalue() {
+
+      const csvFile = document.getElementById('csvFile').files[0];
+
+      const totalList = document.getElementById('totallist').value.trim();
+
+      const prizeValue = document.getElementById('prizeValue').value.trim();
+
+      // ตรวจสอบข้อมูล
+      if (!csvFile || !totalList || !prizeValue) {
+        alert("กรุณากรอกข้อมูลให้ครบ");
+        return;
+      }
+
+      if (!Number.isInteger(Number(totalList)) || Number(totalList) < 1) {
+        alert("จำนวนที่ต้องการสุ่มต้องเป็นจำนวนเต็มตั้งแต่ 1 ขึ้นไป");
+        return;
+      }
+
+      if (!Number.isFinite(Number(prizeValue)) || Number(prizeValue) < 0) {
+        alert("กรุณาระบุมูลค่ารางวัลให้ถูกต้อง");
+        return;
+      }
+
+      if (!API_URL.startsWith("https://script.google.com/")) {
+        alert("กรุณาตั้งค่า API_URL ให้ถูกต้อง");
+        return;
+      }
+
+      if (ADMIN_KEY === "ใส่_ADMIN_KEY_ที่ตั้งไว้") {
+        alert("กรุณาตั้งค่า ADMIN_KEY ก่อนใช้งาน");
+        return;
+      }
+
+      try {
+
+        // ป้องกันกดซ้ำระหว่างอัปโหลด
+        const saveButton = document.querySelector(".btn-process");
+        saveButton.disabled = true;
+        saveButton.textContent = "กำลังอัปโหลด...";
+
+        // ส่ง CSV ไป Google Sheets
+        const result = await uploadCsvToGoogle(csvFile);
+
+        // เก็บค่าตั้งค่า
+        savedCsvFile = csvFile;
+        savedTotalList = Number(totalList);
+        savedPrizeValue = prizeValue;
+
+        staffUploaded = true;
+
+        alert(
+          "อัปโหลดรายชื่อสำเร็จ!\n" +
+          "จำนวนทั้งหมด " + result.imported + " คน"
+        );
+
+        // ปิดหน้าต่างตั้งค่า
+        document.getElementById('configModal')
+          .classList.remove('show');
+
+      } catch (error) {
+
+        staffUploaded = false;
+
+        alert("อัปโหลดไม่สำเร็จ: " + error.message);
+
+      } finally {
+
+        const saveButton = document.querySelector(".btn-process");
+        saveButton.disabled = false;
+        saveButton.textContent = "บันทึก";
+
+      }
+
+    }
+
+
+    // ========= Balance สังกัด กระจายจำนวนสังกัดเท่าๆกัน ========= //
+    function balancedRandomSelection(data, numSelect) {
+      // ========= จัดกลุ่มตามสังกัด ========= //
+      const groupedByDivision = data.reduce((acc, staff) => {
+        const division = staff['สังกัด'];
+        if (!acc[division]) acc[division] = [];
+        acc[division].push(staff);
+        return acc;
+      }, {});
+
+      // ========= คำนวณจำนวนสุ่มแต่ละกังกัดตามจำนวนคนที่มี ========= //
+      const divisions = Object.keys(groupedByDivision);
+      const staffPerDivision = Math.floor(numSelect / divisions.length);
+      // ========= ปัดเศษที่เหลือจากการหารให้สังกัดแรก ========= //
+      const remainder = numSelect % divisions.length;
+
+      let selectedStaff = [];
+      let totalSelected = 0; // Keep track of total selected staff
+
+      // ========= สุ่มเลือกพนักงานในแต่ละสังกัด ========= //
+      divisions.forEach((division, index) => {
+        const divisionStaff = groupedByDivision[division];
+        const shuffledDivisionStaff = shuffleArray([...divisionStaff]);
+
+        // Add staff for this division
+        const divisionSelectCount = staffPerDivision + (index < remainder ? 1 : 0);
+        // Prevent selecting more than available
+        const selectedFromDivision = shuffledDivisionStaff.slice(0, Math.min(divisionSelectCount, divisionStaff.length));
+        selectedStaff.push(...selectedFromDivision);
+        totalSelected += selectedFromDivision.length;
+      });
+
+      // Ensure the total number of selected staff is exactly numSelect
+      if (totalSelected < numSelect) {
+        // If there are still spots to be filled, fill from remaining staff
+        const remainingStaff = data.filter(staff => !selectedStaff.includes(staff));
+        const remainingCount = numSelect - totalSelected;
+        const shuffledRemainingStaff = shuffleArray(remainingStaff);
+        selectedStaff.push(...shuffledRemainingStaff.slice(0, remainingCount));
+      }
+
+      // Shuffle the final selected staff to mix them up
+      selectedStaff = shuffleArray(selectedStaff);
+      return selectedStaff;
+    }
+
+    function generateRandomList(csvFile, totalList, prizeValue) {
+      const reader = new FileReader();
+
+      reader.onload = function (e) {
+        const text = e.target.result;
+        const lines = text.split('\n').filter(line => line.trim() !== '');
+        const headers = lines[0].split(',').map(h => h.trim());
+
+        // แปลง CSV เป็นอาเรย์ของวัตถุ
+        allStaffData = lines.slice(1).map(line => {
+          const values = line.split(',');
+          const obj = {};
+          headers.forEach((h, i) => obj[h] = values[i] ? values[i].trim() : '');
+          return obj;
+        });
+
+        // เลือกเฉพาะคนที่ยังไม่มีรางวัล
+        const eligibleStaff = allStaffData.filter(
+          staff => !staff['รางวัล'] || staff['รางวัล'].trim() === ''
+        );
+
+        const numToSelect = parseInt(totalList);
+
+        // ตรวจสอบจำนวนผู้มีสิทธิ์
+        if (eligibleStaff.length < numToSelect) {
+          alert("จำนวนที่ต้องการสุ่มมากกว่าจำนวนผู้ที่ยังไม่มีรางวัล");
+          return;
+        }
+
+        // เรียกฟังก์ชันสุ่มแบบกระจายสังกัด
+        const selectedStaff = balancedRandomSelection(eligibleStaff, numToSelect);
+
+        // เติมข้อมูลรางวัลและจำนวน
+        selectedStaff.forEach(staff => {
+          staff['รางวัล'] = "ได้รับรางวัล";
+          staff['มูลค่า'] = savedPrizeValue;
+
+          // ใส่เวลาแบบ HH:MM ลงในหมายเหตุ
+          const now = new Date();
+          const hours = String(now.getHours()).padStart(2, '0');
+          const minutes = String(now.getMinutes()).padStart(2, '0');
+          staff['หมายเหตุ'] = `ETL : ${hours}:${minutes}`;
+        });
+
+        // อัปเดต allStaffData กับผลสุ่ม
+        selectedStaffData = selectedStaff;
+
+        // สร้าง CSV สำหรับดาวน์โหลด
+        const csvContent = [headers.join(',')].concat(
+          allStaffData.map(staff => headers.map(h => staff[h] || '').join(','))
+        ).join('\n');
+
+        // สร้างลิงก์ดาวน์โหลด
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'ผลการประกาศรางวัล.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+
+        console.log("สุ่มเสร็จแล้ว:", selectedStaff);
+      };
+
+      reader.readAsText(csvFile);
+    }
+
+
+    // ========= สุ่มลำดับแสดงผล ========= //
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    // ========= ฟังก์ชันเสียง ========= //
+    function playSpinSound(duration = 7000, fadeDuration = 2000) {
+      audio.currentTime = 0;
+      audio.volume = 1;
+      audio.play();
+
+      // เริ่มเฟดเสียงก่อนหมุนจบ 2 วิ
+      const fadeStart = duration - fadeDuration;
+
+      setTimeout(() => {
+        let fadeStep = 50; // ลดเสียงทุก 50ms
+        let volumeStep = audio.volume / (fadeDuration / fadeStep);
+
+        let fadeInterval = setInterval(() => {
+          if (audio.volume > 0.05) {
+            audio.volume -= volumeStep;
+          } else {
+            audio.volume = 0;
+            clearInterval(fadeInterval);
+          }
+        }, fadeStep);
+
+      }, fadeStart);
+
+      // หยุดเสียงเมื่อหมุนเสร็จ
+      setTimeout(() => {
+        audio.pause();
+        audio.currentTime = 0;
+      }, duration);
+    }
+
+    /* ================== FIX MODAL NOT SHOWING ================== */
+    function toggleConfig(event) {
+      event.stopPropagation();  // ป้องกันโดน event ปิด modal ทับ
+      document.getElementById('configModal').classList.toggle('show');
+    }
+
+    // ป้องกันคลิกใน modal แล้วปิด
+    document.getElementById('configModal').addEventListener('click', e => {
+      e.stopPropagation();
+    });
+
+    // คลิกจอที่ไม่ใช่ modal → ปิด modal
+    document.addEventListener('click', function () {
+      const modal = document.getElementById('configModal');
+      if (modal.classList.contains('show')) {
+        modal.classList.remove('show');
+      }
+    });
+
+    // ========= ฟังก์ชันหมุนวงล้อ ========= //
+    btn.onclick = function () {
+      if (!savedCsvFile) {
+        alert("กรุณาทำการบันทึกข้อมูลให้แล้วเสร็จก่อนทำการสุ่มข้อมูล");
+        return;
+      }
+
+      // สุ่มรายชื่อ
+      generateRandomList(savedCsvFile, savedTotalList, savedPrizeValue);
+
+      let spinTime = 7000; // เวลาในการหมุน (ms)
+      let random = Math.floor(Math.random() * 5000) + 3000;
+
+      // รีเซ็ต rotation ก่อน
+      wheel.style.transition = "none";
+      wheel.style.transform = "rotate(0deg)";
+
+      // อัปเดตค่า transform (force reflow)
+      wheel.offsetHeight; // trick เพื่อบังคับ reflow
+
+      // หมุนวงล้อ
+      wheel.style.transition = spinTime / 1000 + "s ease-out";
+      wheel.style.transform = "rotate(" + random + "deg)";
+
+      // เล่นเสียง
+      playSpinSound(spinTime);
+
+      // เรียก showCreditScene หลังหมุนเสร็จ
+      setTimeout(() => {
+        showCreditScene();
+      }, spinTime); // spinTime = เวลาหมุน (ms)
+    };
+
+    function showCreditScene() {
+      if (!selectedStaffData || selectedStaffData.length === 0) {
+        alert("ยังไม่มีข้อมูลผู้ได้รับรางวัล");
+        return;
+      }
+
+      // เปิดแท็บใหม่
+      sessionStorage.setItem(
+        'creditData',
+        JSON.stringify(selectedStaffData)
+      );
+      window.open('credits.html', '_blank');
+
+
+    }
+
+    // ========= ฟังก์ชันล้างข้อมูล ========= //
+    function clearData() {
+      // document.querySelector('.results').innerHTML = '';
+      selectedData = [];
+      document.getElementById('boxshow').style.display = 'none';
+      document.getElementById('boxcontent').innerHTML = '';
+      document.getElementById('csvFile').value = '';
+      document.getElementById('totallist').value = '';
+      document.getElementById('prizeValue').value = '';
+      document.getElementById('downloadButtons').style.display = 'none';
+    }
+
+  </script>
+
+
+</body>
+
+</html>
