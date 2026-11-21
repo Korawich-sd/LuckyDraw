@@ -505,6 +505,7 @@
     // ========= ฟังก์ชันหมุนวงล้อ ========= //
 
 
+
     btn.onclick = async function () {
 
       if (!staffUploaded) {
@@ -519,12 +520,12 @@
 
       try {
 
-        // 1. เรียก API เพื่อสุ่มรายชื่อ
+        // 1. สุ่มรายชื่อจาก Google Sheets
         const drawResult = await drawFromGoogleSheets();
 
         selectedStaffData = drawResult.winners;
 
-        // 2. เริ่มหมุนวงล้อ
+        // 2. หมุนวงล้อ
         const spinTime = 7000;
         const random = Math.floor(Math.random() * 5000) + 3000;
 
@@ -537,38 +538,40 @@
 
         playSpinSound(spinTime);
 
-        // 3. รอจนวงล้อหมุนเสร็จ
+        // 3. รอวงล้อหมุนจนเสร็จ
         await new Promise(resolve => setTimeout(resolve, spinTime));
 
-        // 4. แสดงรายชื่อผู้ชนะในหน้าหลัก
+        // 4. แสดงรายชื่อผู้ชนะ
         displayWinners(drawResult.winners);
 
-        btn.disabled = false;
-        btn.textContent = "จับรางวัล";
-
-        // 5. แจ้งผลการสุ่ม
+        // 5. แจ้งผลการสุ่มก่อน
         alert(
           "จับรางวัลสำเร็จ!\n" +
           "รอบที่ " + drawResult.round + "\n" +
           "ผู้ได้รับรางวัล " + drawResult.total + " คน"
         );
 
-        // 6. เปิด Tab credits หลังจากผู้ใช้กด OK
-        const creditTab = window.open("credits.html", "_blank");
+        // 6. คำสั่งนี้จะทำงานเมื่อกด OK ใน Alert แล้วเท่านั้น
+        const creditTab = window.open("about:blank", "_blank");
 
         if (creditTab) {
 
-          // ส่งข้อมูลรายชื่อไปยัง Tab ใหม่
+          // เตรียมข้อมูลใน Tab ใหม่ก่อนเปิดหน้า credits
           creditTab.sessionStorage.setItem(
             "creditData",
             JSON.stringify(drawResult.winners)
           );
 
+          // เปิดหน้าเครดิตหลังจากเตรียมข้อมูลเสร็จ
+          creditTab.location.href = "credits.html";
+
         } else {
+
           alert(
-            "เบราว์เซอร์บล็อกหน้าต่างใหม่\n" +
-            "กรุณาอนุญาต Pop-up เพื่อเปิดหน้าเครดิต"
+            "ไม่สามารถเปิดหน้าเครดิตได้\n" +
+            "กรุณาอนุญาต Pop-up ในเบราว์เซอร์"
           );
+
         }
 
       } catch (error) {
@@ -582,6 +585,7 @@
 
       }
     };
+
 
 
 
