@@ -56,9 +56,9 @@
         <button class="btn btn-download" onclick="downloadSelectedCSV()">
           <i class="fas fa-download"></i> ดาวน์โหลด
         </button>
-        <button class="btn btn-credit" onclick="showCreditScene()">
+        <!-- <button class="btn btn-credit" onclick="showCreditScene()">
           <i class="fas fa-info-circle"></i> เปิดหน้าเครดิต
-        </button>
+        </button> -->
         <button class="btn btn-close" onclick="clearData()">
           <i class="fas fa-times"></i> ล้างข้อมูล
         </button>
@@ -503,10 +503,11 @@
     }
 
     // ========= ฟังก์ชันหมุนวงล้อ ========= //
+
     btn.onclick = async function () {
 
       if (!staffUploaded) {
-        alert("กรุณาอัปโหลดรายชื่อก่อนจับรางวัล");
+        alert("กรุณาบันทึกการตั้งค่าก่อนจับรางวัล");
         return;
       }
 
@@ -515,15 +516,28 @@
       btn.disabled = true;
       btn.textContent = "กำลังสุ่มรางวัล...";
 
+      // เปิดแท็บใหม่ทันที เพื่อป้องกัน Popup Blocker
+      const creditTab = window.open("about:blank", "_blank");
+
+      if (creditTab) {
+        creditTab.document.write(`
+      <html lang="th">
+      <head><meta charset="UTF-8">
+      <title>กำลังเตรียมประกาศรายชื่อ</title></head>
+      <body style="font-family:Tahoma;text-align:center;padding:60px">
+        <h2>กำลังจับรางวัล...</h2>
+        <p>กรุณารอสักครู่</p>
+      </body></html>
+    `);
+        creditTab.document.close();
+      }
+
       try {
 
-        // สุ่มจาก Google Sheets
         const drawResult = await drawFromGoogleSheets();
 
-        // เก็บผลผู้ชนะ
         selectedStaffData = drawResult.winners;
 
-        // เริ่มหมุนวงล้อ
         const spinTime = 7000;
         const random = Math.floor(Math.random() * 5000) + 3000;
 
@@ -538,8 +552,18 @@
 
         setTimeout(() => {
 
-          // แสดงผลหลังวงล้อหยุด
           displayWinners(drawResult.winners);
+
+          // ส่งข้อมูลไปหน้าเครดิต
+          if (creditTab && !creditTab.closed) {
+
+            creditTab.sessionStorage.setItem(
+              "creditData",
+              JSON.stringify(drawResult.winners)
+            );
+
+            creditTab.location.href = "credits.html";
+          }
 
           btn.disabled = false;
           btn.textContent = "จับรางวัล";
@@ -554,6 +578,10 @@
 
       } catch (error) {
 
+        if (creditTab && !creditTab.closed) {
+          creditTab.close();
+        }
+
         alert("จับรางวัลไม่สำเร็จ: " + error.message);
 
         btn.disabled = false;
@@ -561,6 +589,7 @@
 
       }
     };
+
 
     function showCreditScene() {
       if (!selectedStaffData || selectedStaffData.length === 0) {
