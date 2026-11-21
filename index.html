@@ -459,9 +459,17 @@
     function displayWinners(winners) {
       selectedStaffData = winners;
 
+      const resultsContainer = document.getElementById("resultsContainer");
       const boxshow = document.getElementById("boxshow");
       const boxcontent = document.getElementById("boxcontent");
 
+      if (!Array.isArray(winners) || winners.length === 0) {
+        alert("ไม่พบรายชื่อผู้ได้รับรางวัล");
+        return;
+      }
+
+      // แสดงส่วนผลรางวัล
+      resultsContainer.style.display = "block";
       boxshow.style.display = "flex";
       boxcontent.innerHTML = "";
 
@@ -484,6 +492,12 @@
         });
 
         boxcontent.appendChild(row);
+      });
+
+      // เลื่อนหน้าจอมาที่ผลรางวัล
+      resultsContainer.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
       });
     }
 
@@ -530,8 +544,8 @@
           btn.textContent = "จับรางวัล";
 
           alert(
-            "จับรางวัลสำเร็จ!\\n" +
-            "รอบที่ " + drawResult.round + "\\n" +
+            "จับรางวัลสำเร็จ!\n" +
+            "รอบที่ " + drawResult.round + "\n" +
             "ผู้ได้รับรางวัล " + drawResult.total + " คน"
           );
 
