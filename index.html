@@ -113,6 +113,8 @@
 
     let allStaffData = [];
     let selectedStaffData = [];
+    let savedTotalList = 0;
+    let savedPrizeValue = 0;
 
 
     // ======================================
@@ -183,13 +185,11 @@
     async function savevalue() {
 
       const csvFile = document.getElementById('csvFile').files[0];
-
       const totalList = document.getElementById('totallist').value.trim();
-
       const prizeValue = document.getElementById('prizeValue').value.trim();
 
       // ตรวจสอบข้อมูล
-      if (!csvFile || !totalList || !prizeValue) {
+      if (!csvFile || !totalList || prizeValue === "") {
         alert("กรุณากรอกข้อมูลให้ครบ");
         return;
       }
@@ -214,20 +214,23 @@
         return;
       }
 
+      const saveButton = document.querySelector(".btn-process");
+
       try {
 
-        // ป้องกันกดซ้ำระหว่างอัปโหลด
-        const saveButton = document.querySelector(".btn-process");
-        saveButton.disabled = true;
-        saveButton.textContent = "กำลังอัปโหลด...";
+        // ป้องกันการกดซ้ำ
+        if (saveButton) {
+          saveButton.disabled = true;
+          saveButton.textContent = "กำลังอัปโหลด...";
+        }
 
         // ส่ง CSV ไป Google Sheets
         const result = await uploadCsvToGoogle(csvFile);
 
-        // เก็บค่าตั้งค่า
+        // เก็บค่าตั้งค่าไว้ใช้ตอนจับรางวัล
         savedCsvFile = csvFile;
         savedTotalList = Number(totalList);
-        savedPrizeValue = prizeValue;
+        savedPrizeValue = Number(prizeValue);
 
         staffUploaded = true;
 
@@ -248,13 +251,14 @@
 
       } finally {
 
-        const saveButton = document.querySelector(".btn-process");
-        saveButton.disabled = false;
-        saveButton.textContent = "บันทึก";
+        if (saveButton) {
+          saveButton.disabled = false;
+          saveButton.textContent = "บันทึก";
+        }
 
       }
-
     }
+
 
 
     // ========= Balance สังกัด กระจายจำนวนสังกัดเท่าๆกัน ========= //
@@ -430,37 +434,120 @@
       }
     });
 
+    async function drawFromGoogleSheets() {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8"
+        },
+        body: JSON.stringify({
+          action: "draw",
+          adminKey: ADMIN_KEY,
+          total: savedTotalList,
+          prizeValue: savedPrizeValue
+        })
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.message || "ไม่สามารถสุ่มรางวัลได้");
+      }
+
+      return result.data;
+    }
+
+
+    // แสดงผลผู้ชนะบนหน้าเว็บไซต์
+    function displayWinners(winners) {
+      selectedStaffData = winners;
+
+      const boxshow = document.getElementById("boxshow");
+      const boxcontent = document.getElementById("boxcontent");
+
+      boxshow.style.display = "flex";
+      boxcontent.innerHTML = "";
+
+      winners.forEach((person, index) => {
+        const row = document.createElement("div");
+        row.className = "boxshow";
+
+        [
+          index + 1,
+          person.employeeId,
+          person.firstName,
+          person.lastName,
+          person.position,
+          person.division
+        ].forEach(value => {
+          const cell = document.createElement("div");
+          cell.className = "column";
+          cell.textContent = value ?? "";
+          row.appendChild(cell);
+        });
+
+        boxcontent.appendChild(row);
+      });
+    }
+
     // ========= ฟังก์ชันหมุนวงล้อ ========= //
-    btn.onclick = function () {
-      if (!savedCsvFile) {
-        alert("กรุณาทำการบันทึกข้อมูลให้แล้วเสร็จก่อนทำการสุ่มข้อมูล");
+    btn.onclick = async function () {
+
+      if (!staffUploaded) {
+        alert("กรุณาอัปโหลดรายชื่อก่อนจับรางวัล");
         return;
       }
 
-      // สุ่มรายชื่อ
-      generateRandomList(savedCsvFile, savedTotalList, savedPrizeValue);
+      if (btn.disabled) return;
 
-      let spinTime = 7000; // เวลาในการหมุน (ms)
-      let random = Math.floor(Math.random() * 5000) + 3000;
+      btn.disabled = true;
+      btn.textContent = "กำลังสุ่มรางวัล...";
 
-      // รีเซ็ต rotation ก่อน
-      wheel.style.transition = "none";
-      wheel.style.transform = "rotate(0deg)";
+      try {
 
-      // อัปเดตค่า transform (force reflow)
-      wheel.offsetHeight; // trick เพื่อบังคับ reflow
+        // สุ่มจาก Google Sheets
+        const drawResult = await drawFromGoogleSheets();
 
-      // หมุนวงล้อ
-      wheel.style.transition = spinTime / 1000 + "s ease-out";
-      wheel.style.transform = "rotate(" + random + "deg)";
+        // เก็บผลผู้ชนะ
+        selectedStaffData = drawResult.winners;
 
-      // เล่นเสียง
-      playSpinSound(spinTime);
+        // เริ่มหมุนวงล้อ
+        const spinTime = 7000;
+        const random = Math.floor(Math.random() * 5000) + 3000;
 
-      // เรียก showCreditScene หลังหมุนเสร็จ
-      setTimeout(() => {
-        showCreditScene();
-      }, spinTime); // spinTime = เวลาหมุน (ms)
+        wheel.style.transition = "none";
+        wheel.style.transform = "rotate(0deg)";
+        wheel.offsetHeight;
+
+        wheel.style.transition = spinTime / 1000 + "s ease-out";
+        wheel.style.transform = "rotate(" + random + "deg)";
+
+        playSpinSound(spinTime);
+
+        setTimeout(() => {
+
+          // แสดงผลหลังวงล้อหยุด
+          displayWinners(drawResult.winners);
+
+          btn.disabled = false;
+          btn.textContent = "จับรางวัล";
+
+          alert(
+            "จับรางวัลสำเร็จ!\\n" +
+            "รอบที่ " + drawResult.round + "\\n" +
+            "ผู้ได้รับรางวัล " + drawResult.total + " คน"
+          );
+
+        }, spinTime);
+
+      } catch (error) {
+
+        alert("จับรางวัลไม่สำเร็จ: " + error.message);
+
+        btn.disabled = false;
+        btn.textContent = "จับรางวัล";
+
+      }
     };
 
     function showCreditScene() {
