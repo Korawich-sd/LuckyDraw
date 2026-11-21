@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ตรวจสอบรางวัล TUH 2026</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            padding: 25px 15px;
+            display: grid;
+            place-items: center;
+            font-family: Tahoma, sans-serif;
+            background: linear-gradient(145deg, #681b24, #350d16);
+            color: #fffaf0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 580px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        header h1 {
+            color: #fff0bd;
+            font-size: 28px;
+        }
+
+        header p {
+            color: #f3cf79;
+        }
+
+        .panel {
+            background: #fffaf0;
+            color: #3b2020;
+            padding: 28px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px #0005;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #d5c4ae;
+            border-radius: 10px;
+            font-size: 18px;
+            letter-spacing: 3px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 18px;
+            border: 0;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #ffedb6, #d9a94f);
+            color: #350d16;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: #806b5e;
+            line-height: 1.6;
+        }
+
+        #result {
+            margin-top: 22px;
+        }
+
+        .winner {
+            padding: 22px;
+            border: 1px solid #d9b65e;
+            border-radius: 15px;
+            background: #fff3d6;
+            color: #3b2020;
+        }
+
+        .winner h2 {
+            text-align: center;
+            color: #80521e;
+        }
+
+        .name {
+            text-align: center;
+            font-size: 25px;
+            font-weight: bold;
+            color: #681b24;
+            margin: 15px 0;
+        }
+
+        .detail {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #e4d7c0;
+        }
+
+        .detail span {
+            color: #806b5e;
+        }
+
+        .detail strong {
+            text-align: right;
+        }
+
+        .prize {
+            margin-top: 20px;
+            padding: 18px;
+            border-radius: 12px;
+            background: #286644;
+            color: white;
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .message {
+            text-align: center;
+            padding: 20px;
+            border-radius: 12px;
+            background: #f3e9dc;
+            color: #6b3e22;
+            line-height: 1.7;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 12px;
+            color: #f3cf79;
+        }
+
+        @media(max-width:450px) {
+            .detail {
+                display: block;
+            }
+
+            .detail strong {
+                display: block;
+                text-align: left;
+                margin-top: 5px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <header>
+            <h1>✦ ตรวจสอบผู้ได้รับรางวัล ✦</h1>
+            <p>งานเลี้ยงส่งท้ายปีเก่า ต้อนรับปีใหม่ ประจำปี 2569</p>
+        </header>
+
+        <section class="panel">
+
+            <form id="lookupForm">
+                <label for="citizenId">
+                    เลขบัตรประชาชน 13 หลัก
+                </label>
+
+                <input type="password" id="citizenId" maxlength="13" inputmode="numeric" autocomplete="off"
+                    placeholder="กรอกเลขบัตรประชาชน" required>
+
+                <p class="hint">
+                    ระบบใช้เลขบัตรเพื่อค้นหาผลรางวัลเท่านั้น
+                    และจะล้างเลขบัตรออกจากช่องหลังตรวจสอบ
+                </p>
+
+                <button type="submit" id="searchBtn">
+                    ตรวจสอบรางวัล
+                </button>
+            </form>
+
+            <div id="result" aria-live="polite"></div>
+
+        </section>
+
+        <footer>
+            LUCKY DRAW · TUH 2026
+        </footer>
+
+    </div>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbzkLQCwNen5OquQnzndp86WZNTf7thvO6w8EDaoayxa8dsnLl9QmeSqrLNdvEgdgzPITQ/exec";
+
+        const form = document.getElementById("lookupForm");
+        const input = document.getElementById("citizenId");
+        const button = document.getElementById("searchBtn");
+        const result = document.getElementById("result");
+
+        input.addEventListener("input", () => {
+            input.value = input.value.replace(/\D/g, "").slice(0, 13);
+        });
+
+        function showMessage(message) {
+            result.innerHTML = "";
+            const box = document.createElement("div");
+            box.className = "message";
+            box.textContent = message;
+            result.appendChild(box);
+        }
+
+        function showWinner(data) {
+            result.innerHTML = "";
+
+            if (!data.found) {
+                showMessage("ไม่พบข้อมูลในระบบ กรุณาตรวจสอบเลขบัตรอีกครั้ง");
+                return;
+            }
+
+            if (!data.hasPrize) {
+                showMessage(
+                    "สวัสดีคุณ " +
+                    [data.firstName, data.lastName].filter(Boolean).join(" ") +
+                    "\nขณะนี้ยังไม่มีประวัติการได้รับรางวัล ขอให้โชคดีครับ"
+                );
+                return;
+            }
+
+            const card = document.createElement("div");
+            card.className = "winner";
+
+            const heading = document.createElement("h2");
+            heading.textContent = "🎉 ยินดีด้วย คุณได้รับรางวัล";
+
+            const name = document.createElement("div");
+            name.className = "name";
+            name.textContent = data.firstName + " " + data.lastName;
+
+            card.append(heading, name);
+
+            const fields = [
+                ["ตำแหน่ง", data.position],
+                ["หน่วยงาน", data.department],
+                ["สังกัด", data.division]
+            ];
+
+            fields.forEach(([label, value]) => {
+                if (!value) return;
+
+                const row = document.createElement("div");
+                row.className = "detail";
+
+                const left = document.createElement("span");
+                left.textContent = label;
+
+                const right = document.createElement("strong");
+                right.textContent = value;
+
+                row.append(left, right);
+                card.appendChild(row);
+            });
+
+            const prize = document.createElement("div");
+            prize.className = "prize";
+
+            const amount = Number(data.prizeValue);
+            prize.textContent =
+                "🎁 มูลค่ารางวัล " +
+                (Number.isFinite(amount)
+                    ? amount.toLocaleString("th-TH") + " บาท"
+                    : data.prizeValue + " บาท");
+
+            card.appendChild(prize);
+            result.appendChild(card);
+        }
+
+        form.addEventListener("submit", async event => {
+            event.preventDefault();
+
+            const citizenId = input.value.trim();
+
+            if (!/^\d{13}$/.test(citizenId)) {
+                showMessage("กรุณากรอกเลขบัตรประชาชนให้ครบ 13 หลัก");
+                return;
+            }
+
+            button.disabled = true;
+            button.textContent = "กำลังตรวจสอบ...";
+            showMessage("กำลังค้นหาข้อมูล กรุณารอสักครู่");
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "text/plain;charset=utf-8"
+                    },
+                    body: JSON.stringify({
+                        action: "lookup",
+                        citizenId: citizenId
+                    })
+                });
+
+                const payload = await response.json();
+
+                if (!payload.success) {
+                    throw new Error(payload.message);
+                }
+
+                showWinner(payload.data);
+
+            } catch (error) {
+                showMessage(error.message || "ไม่สามารถเชื่อมต่อระบบได้");
+            } finally {
+                input.value = "";
+                button.disabled = false;
+                button.textContent = "ตรวจสอบรางวัล";
+            }
+        });
+    </script>
+</body>
+
+</html>
