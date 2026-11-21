@@ -189,8 +189,8 @@
       const prizeValue = document.getElementById('prizeValue').value.trim();
 
       // ตรวจสอบข้อมูล
-      if (!csvFile || !totalList || prizeValue === "") {
-        alert("กรุณากรอกข้อมูลให้ครบ");
+      if (!totalList || prizeValue === "") {
+        alert("กรุณากรอกจำนวนผู้ชนะและมูลค่ารางวัลให้ครบ");
         return;
       }
 
@@ -225,19 +225,16 @@
         }
 
         // ส่ง CSV ไป Google Sheets
-        const result = await uploadCsvToGoogle(csvFile);
+        // const result = await uploadCsvToGoogle(csvFile);
 
         // เก็บค่าตั้งค่าไว้ใช้ตอนจับรางวัล
-        savedCsvFile = csvFile;
+        // savedCsvFile = csvFile;
         savedTotalList = Number(totalList);
         savedPrizeValue = Number(prizeValue);
 
         staffUploaded = true;
 
-        alert(
-          "อัปโหลดรายชื่อสำเร็จ!\n" +
-          "จำนวนทั้งหมด " + result.imported + " คน"
-        );
+        alert("บันทึกการตั้งค่าจับรางวัลสำเร็จ");
 
         // ปิดหน้าต่างตั้งค่า
         document.getElementById('configModal')
