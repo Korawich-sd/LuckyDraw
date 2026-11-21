@@ -1,12 +1,30 @@
+
 <!DOCTYPE html>
 <html lang="th">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>ตรวจสอบรางวัล TUH 2026</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#4b101b">
+    <title>ตรวจสอบรางวัล | TUH 2026</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
     <style>
+        :root {
+            --wine: #681b24;
+            --wine-dark: #350d16;
+            --wine-light: #8e3540;
+            --gold: #e8bd68;
+            --gold-light: #fff0bd;
+            --cream: #fffaf0;
+            --ink: #3b2020;
+            --muted: #927d75;
+        }
+
         * {
             box-sizing: border-box;
         }
@@ -14,17 +32,59 @@
         body {
             margin: 0;
             min-height: 100vh;
-            padding: 25px 15px;
-            display: grid;
-            place-items: center;
-            font-family: Tahoma, sans-serif;
-            background: linear-gradient(145deg, #681b24, #350d16);
-            color: #fffaf0;
+            padding: 35px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: "Noto Sans Thai", Tahoma, sans-serif;
+            color: var(--cream);
+            background:
+                radial-gradient(circle at 15% 15%, rgba(232, 189, 104, .17), transparent 28%),
+                radial-gradient(circle at 90% 85%, rgba(142, 53, 64, .3), transparent 30%),
+                linear-gradient(145deg, #681b24, #350d16 75%);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before,
+        body::after {
+            content: "✦";
+            position: fixed;
+            color: rgba(255, 230, 170, .07);
+            font-size: 300px;
+            line-height: 1;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::before {
+            top: -100px;
+            left: -75px;
+        }
+
+        body::after {
+            right: -70px;
+            bottom: -130px;
         }
 
         .container {
             width: 100%;
-            max-width: 580px;
+            max-width: 510px;
+            position: relative;
+            z-index: 1;
+            animation: appear .7s ease both;
+        }
+
+        @keyframes appear {
+            from {
+                opacity: 0;
+                transform: translateY(22px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         header {
@@ -32,131 +92,358 @@
             margin-bottom: 25px;
         }
 
-        header h1 {
-            color: #fff0bd;
-            font-size: 28px;
+        .logo {
+            width: 68px;
+            height: 68px;
+            display: grid;
+            place-items: center;
+            margin: 0 auto 17px;
+            border: 1px solid rgba(255, 230, 170, .65);
+            border-radius: 22px;
+            background: linear-gradient(145deg, rgba(255, 255, 255, .16), rgba(255, 255, 255, .04));
+            box-shadow: 0 8px 30px rgba(0, 0, 0, .18);
+            color: var(--gold-light);
+            font-size: 32px;
+        }
+
+        .eyebrow {
+            color: var(--gold);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            margin: 0 0 9px;
+        }
+
+        h1 {
+            color: var(--gold-light);
+            font-size: clamp(25px, 5vw, 34px);
+            font-weight: 800;
+            margin: 0;
+            line-height: 1.4;
+            text-shadow: 0 3px 20px rgba(0, 0, 0, .2);
         }
 
         header p {
-            color: #f3cf79;
+            color: rgba(255, 240, 189, .82);
+            font-size: 14px;
+            margin: 9px 0 0;
+            line-height: 1.7;
+        }
+
+        .ornament {
+            color: var(--gold);
+            letter-spacing: 8px;
+            margin-top: 15px;
+            font-size: 16px;
         }
 
         .panel {
-            background: #fffaf0;
-            color: #3b2020;
-            padding: 28px;
-            border-radius: 20px;
-            box-shadow: 0 15px 40px #0005;
+            padding: 30px;
+            border: 1px solid rgba(255, 230, 170, .55);
+            border-radius: 24px;
+            color: var(--ink);
+            background: rgba(255, 250, 240, .97);
+            box-shadow:
+                0 25px 65px rgba(0, 0, 0, .3),
+                inset 0 1px 0 white;
+        }
+
+        .panel-heading {
+            margin-bottom: 23px;
+        }
+
+        .panel-heading h2 {
+            font-size: 20px;
+            color: var(--wine);
+            margin: 0 0 5px;
+            font-weight: 800;
+        }
+
+        .panel-heading p {
+            color: var(--muted);
+            font-size: 13px;
+            margin: 0;
         }
 
         label {
             display: block;
-            font-weight: bold;
             margin-bottom: 10px;
+            color: #563b35;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .input-wrap {
+            position: relative;
         }
 
         input {
             width: 100%;
-            padding: 15px;
-            border: 1px solid #d5c4ae;
-            border-radius: 10px;
-            font-size: 18px;
+            height: 58px;
+            padding: 0 54px 0 17px;
+            border: 1.5px solid #e5d7c8;
+            border-radius: 13px;
+            outline: none;
+            background: #fffdf9;
+            color: var(--wine);
+            font-family: inherit;
+            font-size: 19px;
+            font-weight: 700;
             letter-spacing: 3px;
+            transition: .25s;
         }
 
-        button {
-            width: 100%;
-            padding: 15px;
-            margin-top: 18px;
+        input::placeholder {
+            color: #c3b4a8;
+            font-size: 14px;
+            letter-spacing: 0;
+            font-weight: 400;
+        }
+
+        input:focus {
+            border-color: var(--wine-light);
+            box-shadow: 0 0 0 4px rgba(104, 27, 36, .09);
+            background: white;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
             border: 0;
             border-radius: 10px;
-            background: linear-gradient(135deg, #ffedb6, #d9a94f);
-            color: #350d16;
-            font-size: 17px;
-            font-weight: bold;
+            background: transparent;
+            color: #9a8175;
             cursor: pointer;
+            font-size: 18px;
+            display: grid;
+            place-items: center;
         }
 
-        button:disabled {
-            opacity: .5;
-            cursor: not-allowed;
+        .toggle-password:hover {
+            background: #f4e9dc;
         }
 
         .hint {
+            margin: 9px 0 0;
+            color: #927d75;
             font-size: 12px;
-            color: #806b5e;
-            line-height: 1.6;
+            line-height: 1.7;
+        }
+
+        .search-btn {
+            width: 100%;
+            height: 55px;
+            margin-top: 22px;
+            border: 0;
+            border-radius: 13px;
+            background: linear-gradient(120deg, #7c2530, #4b101b);
+            color: white;
+            font-family: inherit;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 7px 18px rgba(104, 27, 36, .22);
+            transition: transform .2s, box-shadow .2s, opacity .2s;
+        }
+
+        .search-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 11px 25px rgba(104, 27, 36, .3);
+        }
+
+        .search-btn:disabled {
+            opacity: .65;
+            cursor: wait;
+        }
+
+        .btn-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .spinner {
+            width: 17px;
+            height: 17px;
+            border: 2px solid rgba(255, 255, 255, .35);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         #result {
             margin-top: 22px;
         }
 
+        .message {
+            padding: 20px;
+            border-radius: 14px;
+            text-align: center;
+            line-height: 1.8;
+            font-size: 14px;
+            animation: appear .35s ease both;
+        }
+
+        .message.info {
+            color: #70501d;
+            background: #fff4d9;
+            border: 1px solid #f0d99e;
+        }
+
+        .message.warning {
+            color: #76512a;
+            background: #fff4e7;
+            border: 1px solid #ecd3ae;
+        }
+
+        .message.error {
+            color: #8a2833;
+            background: #fff0f0;
+            border: 1px solid #efcaca;
+        }
+
+        .message.success {
+            color: #286644;
+            background: #edf8f0;
+            border: 1px solid #c4e4ce;
+        }
+
         .winner {
+            overflow: hidden;
+            border: 1px solid #e6c875;
+            border-radius: 17px;
+            background: linear-gradient(145deg, #fffaf0, #fff0cf);
+            animation: appear .45s ease both;
+        }
+
+        .winner-banner {
+            padding: 20px 15px;
+            text-align: center;
+            color: white;
+            background: linear-gradient(120deg, #286644, #174b31);
+        }
+
+        .trophy {
+            font-size: 36px;
+            margin-bottom: 5px;
+        }
+
+        .winner-banner h2 {
+            margin: 0;
+            font-size: 19px;
+            font-weight: 800;
+        }
+
+        .winner-body {
             padding: 22px;
-            border: 1px solid #d9b65e;
-            border-radius: 15px;
-            background: #fff3d6;
-            color: #3b2020;
         }
 
-        .winner h2 {
+        .winner-name {
             text-align: center;
-            color: #80521e;
+            color: var(--wine);
+            font-size: clamp(21px, 5vw, 27px);
+            font-weight: 800;
+            line-height: 1.5;
+            margin: 0 0 19px;
+            overflow-wrap: anywhere;
         }
 
-        .name {
+        .winner-label {
             text-align: center;
-            font-size: 25px;
-            font-weight: bold;
-            color: #681b24;
-            margin: 15px 0;
+            color: #9a7952;
+            font-size: 12px;
+            margin-bottom: 5px;
         }
 
         .detail {
             display: flex;
             justify-content: space-between;
+            align-items: flex-start;
             gap: 12px;
-            padding: 12px 0;
-            border-bottom: 1px solid #e4d7c0;
+            padding: 11px 0;
+            border-bottom: 1px solid #eadcc5;
+            font-size: 13px;
         }
 
         .detail span {
-            color: #806b5e;
+            flex-shrink: 0;
+            color: #927d75;
         }
 
         .detail strong {
+            color: #4c302a;
             text-align: right;
+            overflow-wrap: anywhere;
         }
 
         .prize {
             margin-top: 20px;
-            padding: 18px;
-            border-radius: 12px;
-            background: #286644;
-            color: white;
+            padding: 17px;
+            border-radius: 13px;
             text-align: center;
-            font-size: 22px;
-            font-weight: bold;
+            color: #704a17;
+            background: linear-gradient(135deg, #fff0bd, #f0d18a);
+            border: 1px solid #e4c16d;
         }
 
-        .message {
-            text-align: center;
-            padding: 20px;
-            border-radius: 12px;
-            background: #f3e9dc;
-            color: #6b3e22;
-            line-height: 1.7;
-        }
-
-        footer {
-            text-align: center;
-            margin-top: 25px;
+        .prize-caption {
             font-size: 12px;
-            color: #f3cf79;
+            margin-bottom: 5px;
         }
 
-        @media(max-width:450px) {
+        .prize-name {
+            font-size: 17px;
+            font-weight: 800;
+            line-height: 1.5;
+        }
+
+        .prize-amount {
+            font-size: 23px;
+            font-weight: 800;
+            margin-top: 4px;
+        }
+
+        .not-winner-icon {
+            font-size: 34px;
+            margin-bottom: 8px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 22px;
+            color: rgba(255, 240, 189, .7);
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 25px 13px;
+            }
+
+            .panel {
+                padding: 23px 18px;
+                border-radius: 20px;
+            }
+
+            .logo {
+                width: 58px;
+                height: 58px;
+                font-size: 27px;
+                border-radius: 18px;
+            }
+
             .detail {
                 display: block;
             }
@@ -164,37 +451,64 @@
             .detail strong {
                 display: block;
                 text-align: left;
-                margin-top: 5px;
+                margin-top: 4px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: .01ms !important;
+                transition-duration: .01ms !important;
             }
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
+    <main class="container">
 
         <header>
-            <h1>✦ ตรวจสอบผู้ได้รับรางวัล ✦</h1>
-            <p>งานเลี้ยงส่งท้ายปีเก่า ต้อนรับปีใหม่ ประจำปี 2569</p>
+            <div class="logo">✦</div>
+            <p class="eyebrow">LUCKY DRAW · TUH 2026</p>
+            <h1>ตรวจสอบผู้ได้รับรางวัล</h1>
+            <p>
+                งานเลี้ยงส่งท้ายปีเก่า<br>
+                ต้อนรับปีใหม่ ประจำปี 2569
+            </p>
+            <div class="ornament">✧ ✦ ✧</div>
         </header>
 
         <section class="panel">
 
-            <form id="lookupForm">
-                <label for="citizenId">
-                    เลขบัตรประชาชน 13 หลัก
-                </label>
+            <div class="panel-heading">
+                <h2>ค้นหาผลรางวัลของคุณ</h2>
+                <p>กรอกเลขบัตรประชาชนเพื่อค้นหาประวัติการได้รับรางวัล</p>
+            </div>
 
-                <input type="password" id="citizenId" maxlength="13" inputmode="numeric" autocomplete="off"
-                    placeholder="กรอกเลขบัตรประชาชน" required>
+            <form id="lookupForm">
+                <label for="citizenId">เลขบัตรประชาชน 13 หลัก</label>
+
+                <div class="input-wrap">
+                    <input type="password" id="citizenId" maxlength="13" inputmode="numeric" autocomplete="off"
+                        placeholder="กรอกเลขบัตรประชาชน" required>
+
+                    <button type="button" class="toggle-password" id="togglePassword" aria-label="แสดงหรือซ่อนเลขบัตร"
+                        title="แสดงหรือซ่อนเลขบัตร">◉</button>
+                </div>
 
                 <p class="hint">
-                    ระบบใช้เลขบัตรเพื่อค้นหาผลรางวัลเท่านั้น
-                    และจะล้างเลขบัตรออกจากช่องหลังตรวจสอบ
+                    🔒 ระบบใช้เลขบัตรประชาชนเพื่อค้นหาผลรางวัลเท่านั้น
+                    และจะล้างข้อมูลออกจากช่องหลังตรวจสอบ
                 </p>
 
-                <button type="submit" id="searchBtn">
-                    ตรวจสอบรางวัล
+                <button type="submit" class="search-btn" id="searchBtn">
+                    <span class="btn-content" id="btnContent">
+                        <span>⌕</span>
+                        <span>ตรวจสอบรางวัล</span>
+                    </span>
                 </button>
             </form>
 
@@ -202,11 +516,12 @@
 
         </section>
 
-        <footer>
-            LUCKY DRAW · TUH 2026
+        <footer class="footer">
+            LUCKY DRAW · TUH 2026<br>
+            ขอแสดงความยินดีกับผู้ได้รับรางวัลทุกท่าน
         </footer>
 
-    </div>
+    </main>
 
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbzkLQCwNen5OquQnzndp86WZNTf7thvO6w8EDaoayxa8dsnLl9QmeSqrLNdvEgdgzPITQ/exec";
@@ -214,33 +529,81 @@
         const form = document.getElementById("lookupForm");
         const input = document.getElementById("citizenId");
         const button = document.getElementById("searchBtn");
+        const btnContent = document.getElementById("btnContent");
         const result = document.getElementById("result");
+        const togglePassword = document.getElementById("togglePassword");
 
+        // รับเฉพาะตัวเลข 13 หลัก
         input.addEventListener("input", () => {
             input.value = input.value.replace(/\D/g, "").slice(0, 13);
         });
 
-        function showMessage(message) {
+        // แสดง/ซ่อนเลขบัตร
+        togglePassword.addEventListener("click", () => {
+            const isHidden = input.type === "password";
+            input.type = isHidden ? "text" : "password";
+            togglePassword.textContent = isHidden ? "◎" : "◉";
+        });
+
+        function showMessage(message, type = "info", icon = "") {
             result.innerHTML = "";
+
             const box = document.createElement("div");
-            box.className = "message";
-            box.textContent = message;
+            box.className = "message " + type;
+
+            if (icon) {
+                const iconElement = document.createElement("div");
+                iconElement.className = "not-winner-icon";
+                iconElement.textContent = icon;
+                box.appendChild(iconElement);
+            }
+
+            const text = document.createElement("div");
+            text.textContent = message;
+            box.appendChild(text);
+
             result.appendChild(box);
+        }
+
+        function addDetail(card, label, value) {
+            if (value === undefined || value === null || value === "") return;
+
+            const row = document.createElement("div");
+            row.className = "detail";
+
+            const left = document.createElement("span");
+            left.textContent = label;
+
+            const right = document.createElement("strong");
+            right.textContent = value;
+
+            row.append(left, right);
+            card.appendChild(row);
         }
 
         function showWinner(data) {
             result.innerHTML = "";
 
-            if (!data.found) {
-                showMessage("ไม่พบข้อมูลในระบบ กรุณาตรวจสอบเลขบัตรอีกครั้ง");
+            if (!data || !data.found) {
+                showMessage(
+                    "ไม่พบข้อมูลในระบบ กรุณาตรวจสอบเลขบัตรประชาชนอีกครั้ง",
+                    "warning",
+                    "🔎"
+                );
                 return;
             }
 
+            const fullName = [
+                data.firstName,
+                data.lastName
+            ].filter(Boolean).join(" ");
+
             if (!data.hasPrize) {
                 showMessage(
-                    "สวัสดีคุณ " +
-                    [data.firstName, data.lastName].filter(Boolean).join(" ") +
-                    "\nขณะนี้ยังไม่มีประวัติการได้รับรางวัล ขอให้โชคดีครับ"
+                    "สวัสดีคุณ " + (fullName || "ผู้ร่วมกิจกรรม") +
+                    "\nขณะนี้ยังไม่มีประวัติการได้รับรางวัล ขอให้โชคดีครับ",
+                    "info",
+                    "🍀"
                 );
                 return;
             }
@@ -248,48 +611,68 @@
             const card = document.createElement("div");
             card.className = "winner";
 
+            const banner = document.createElement("div");
+            banner.className = "winner-banner";
+
+            const trophy = document.createElement("div");
+            trophy.className = "trophy";
+            trophy.textContent = "🏆";
+
             const heading = document.createElement("h2");
-            heading.textContent = "🎉 ยินดีด้วย คุณได้รับรางวัล";
+            heading.textContent = "ยินดีด้วย! คุณได้รับรางวัล";
+
+            banner.append(trophy, heading);
+
+            const body = document.createElement("div");
+            body.className = "winner-body";
+
+            const label = document.createElement("div");
+            label.className = "winner-label";
+            label.textContent = "ขอแสดงความยินดีกับ";
 
             const name = document.createElement("div");
-            name.className = "name";
-            name.textContent = data.firstName + " " + data.lastName;
+            name.className = "winner-name";
+            name.textContent = fullName || "ไม่พบชื่อ";
 
-            card.append(heading, name);
+            body.append(label, name);
 
-            const fields = [
-                ["ตำแหน่ง", data.position],
-                ["หน่วยงาน", data.department],
-                ["สังกัด", data.division]
-            ];
-
-            fields.forEach(([label, value]) => {
-                if (!value) return;
-
-                const row = document.createElement("div");
-                row.className = "detail";
-
-                const left = document.createElement("span");
-                left.textContent = label;
-
-                const right = document.createElement("strong");
-                right.textContent = value;
-
-                row.append(left, right);
-                card.appendChild(row);
-            });
+            addDetail(body, "ตำแหน่ง", data.position);
+            addDetail(body, "หน่วยงาน", data.department);
+            addDetail(body, "สังกัด", data.division);
 
             const prize = document.createElement("div");
             prize.className = "prize";
 
-            const amount = Number(data.prizeValue);
-            prize.textContent =
-                "🎁 มูลค่ารางวัล " +
-                (Number.isFinite(amount)
-                    ? amount.toLocaleString("th-TH") + " บาท"
-                    : data.prizeValue + " บาท");
+            const prizeCaption = document.createElement("div");
+            prizeCaption.className = "prize-caption";
+            prizeCaption.textContent = "🎁 รางวัลที่ได้รับ";
 
-            card.appendChild(prize);
+            const prizeName = document.createElement("div");
+            prizeName.className = "prize-name";
+            prizeName.textContent = data.prize || "รางวัล Lucky Draw";
+
+            const prizeAmount = document.createElement("div");
+            prizeAmount.className = "prize-amount";
+
+            const amount = Number(
+                String(data.prizeValue ?? "").replace(/,/g, "")
+            );
+
+            prizeAmount.textContent =
+                data.prizeValue !== undefined &&
+                    data.prizeValue !== null &&
+                    data.prizeValue !== ""
+                    ? (
+                        Number.isFinite(amount)
+                            ? amount.toLocaleString("th-TH") + " บาท"
+                            : data.prizeValue + " บาท"
+                    )
+                    : "";
+
+            prize.append(prizeCaption, prizeName, prizeAmount);
+            body.appendChild(prize);
+
+            card.append(banner, body);
             result.appendChild(card);
         }
 
@@ -299,13 +682,20 @@
             const citizenId = input.value.trim();
 
             if (!/^\d{13}$/.test(citizenId)) {
-                showMessage("กรุณากรอกเลขบัตรประชาชนให้ครบ 13 หลัก");
+                showMessage(
+                    "กรุณากรอกเลขบัตรประชาชนให้ครบ 13 หลัก",
+                    "error",
+                    "⚠️"
+                );
+                input.focus();
                 return;
             }
 
             button.disabled = true;
-            button.textContent = "กำลังตรวจสอบ...";
-            showMessage("กำลังค้นหาข้อมูล กรุณารอสักครู่");
+            btnContent.innerHTML =
+                '<span class="spinner"></span><span>กำลังตรวจสอบข้อมูล...</span>';
+
+            showMessage("กำลังค้นหาข้อมูล กรุณารอสักครู่", "info", "⌕");
 
             try {
                 const response = await fetch(API_URL, {
@@ -319,20 +709,31 @@
                     })
                 });
 
+                if (!response.ok) {
+                    throw new Error("ไม่สามารถเชื่อมต่อระบบได้ กรุณาลองใหม่");
+                }
+
                 const payload = await response.json();
 
                 if (!payload.success) {
-                    throw new Error(payload.message);
+                    throw new Error(
+                        payload.message || "เกิดข้อผิดพลาดในการตรวจสอบข้อมูล"
+                    );
                 }
 
                 showWinner(payload.data);
 
             } catch (error) {
-                showMessage(error.message || "ไม่สามารถเชื่อมต่อระบบได้");
+                showMessage(
+                    error.message || "ไม่สามารถเชื่อมต่อระบบได้ กรุณาลองใหม่",
+                    "error",
+                    "⚠️"
+                );
             } finally {
                 input.value = "";
                 button.disabled = false;
-                button.textContent = "ตรวจสอบรางวัล";
+                btnContent.innerHTML =
+                    '<span>⌕</span><span>ตรวจสอบรางวัล</span>';
             }
         });
     </script>
