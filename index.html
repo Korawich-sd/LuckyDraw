@@ -504,6 +504,7 @@
 
     // ========= ฟังก์ชันหมุนวงล้อ ========= //
 
+
     btn.onclick = async function () {
 
       if (!staffUploaded) {
@@ -516,28 +517,14 @@
       btn.disabled = true;
       btn.textContent = "กำลังสุ่มรางวัล...";
 
-      // เปิดแท็บใหม่ทันที เพื่อป้องกัน Popup Blocker
-      const creditTab = window.open("about:blank", "_blank");
-
-      if (creditTab) {
-        creditTab.document.write(`
-      <html lang="th">
-      <head><meta charset="UTF-8">
-      <title>กำลังเตรียมประกาศรายชื่อ</title></head>
-      <body style="font-family:Tahoma;text-align:center;padding:60px">
-        <h2>กำลังจับรางวัล...</h2>
-        <p>กรุณารอสักครู่</p>
-      </body></html>
-    `);
-        creditTab.document.close();
-      }
-
       try {
 
+        // 1. เรียก API เพื่อสุ่มรายชื่อ
         const drawResult = await drawFromGoogleSheets();
 
         selectedStaffData = drawResult.winners;
 
+        // 2. เริ่มหมุนวงล้อ
         const spinTime = 7000;
         const random = Math.floor(Math.random() * 5000) + 3000;
 
@@ -550,45 +537,52 @@
 
         playSpinSound(spinTime);
 
-        setTimeout(() => {
+        // 3. รอจนวงล้อหมุนเสร็จ
+        await new Promise(resolve => setTimeout(resolve, spinTime));
 
-          displayWinners(drawResult.winners);
+        // 4. แสดงรายชื่อผู้ชนะในหน้าหลัก
+        displayWinners(drawResult.winners);
 
-          // ส่งข้อมูลไปหน้าเครดิต
-          if (creditTab && !creditTab.closed) {
+        btn.disabled = false;
+        btn.textContent = "จับรางวัล";
 
-            creditTab.sessionStorage.setItem(
-              "creditData",
-              JSON.stringify(drawResult.winners)
-            );
+        // 5. แจ้งผลการสุ่ม
+        alert(
+          "จับรางวัลสำเร็จ!\n" +
+          "รอบที่ " + drawResult.round + "\n" +
+          "ผู้ได้รับรางวัล " + drawResult.total + " คน"
+        );
 
-            creditTab.location.href = "credits.html";
-          }
+        // 6. เปิด Tab credits หลังจากผู้ใช้กด OK
+        const creditTab = window.open("credits.html", "_blank");
 
-          btn.disabled = false;
-          btn.textContent = "จับรางวัล";
+        if (creditTab) {
 
-          alert(
-            "จับรางวัลสำเร็จ!\n" +
-            "รอบที่ " + drawResult.round + "\n" +
-            "ผู้ได้รับรางวัล " + drawResult.total + " คน"
+          // ส่งข้อมูลรายชื่อไปยัง Tab ใหม่
+          creditTab.sessionStorage.setItem(
+            "creditData",
+            JSON.stringify(drawResult.winners)
           );
 
-        }, spinTime);
+        } else {
+          alert(
+            "เบราว์เซอร์บล็อกหน้าต่างใหม่\n" +
+            "กรุณาอนุญาต Pop-up เพื่อเปิดหน้าเครดิต"
+          );
+        }
 
       } catch (error) {
 
-        if (creditTab && !creditTab.closed) {
-          creditTab.close();
-        }
-
         alert("จับรางวัลไม่สำเร็จ: " + error.message);
+
+      } finally {
 
         btn.disabled = false;
         btn.textContent = "จับรางวัล";
 
       }
     };
+
 
 
     function showCreditScene() {
