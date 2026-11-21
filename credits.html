@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#681b24">
+  <title>ประกาศรายชื่อผู้ได้รับรางวัล | งานเลี้ยงปีใหม่ 2569</title>
+  <style>
+    :root {
+      --wine: #681b24;
+      --wine-dark: #350d16;
+      --gold: #f3cf79;
+      --gold-light: #fff0bd;
+      --cream: #fffaf0;
+      --ink: #3b2020;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--cream);
+      font-family: "Noto Sans Thai", "Tahoma", sans-serif;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(243,207,121,.22), transparent 48%),
+        linear-gradient(145deg, var(--wine), var(--wine-dark));
+      overflow-x: hidden;
+    }
+    body::before, body::after {
+      content: "✦";
+      position: fixed;
+      color: rgba(255,226,157,.18);
+      font-size: clamp(140px, 28vw, 360px);
+      pointer-events: none;
+      line-height: 1;
+    }
+    body::before { top: -55px; left: -35px; }
+    body::after { right: -35px; bottom: -95px; }
+    .page {
+      width: min(1180px, calc(100% - 36px));
+      margin: 0 auto;
+      padding: 42px 0 34px;
+      position: relative;
+      z-index: 1;
+    }
+    header { text-align: center; margin-bottom: 28px; }
+    .eyebrow {
+      color: var(--gold);
+      letter-spacing: .12em;
+      font-size: clamp(13px, 2vw, 18px);
+      margin: 0 0 10px;
+    }
+    h1 {
+      color: var(--gold-light);
+      font-size: clamp(27px, 5vw, 48px);
+      line-height: 1.3;
+      margin: 0;
+      text-shadow: 0 3px 18px rgba(0,0,0,.3);
+    }
+    .subtitle {
+      font-size: clamp(15px, 2.3vw, 21px);
+      margin: 12px 0 0;
+      color: #fff4df;
+    }
+    .ornament {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      color: var(--gold);
+      margin: 22px auto 0;
+      max-width: 420px;
+    }
+    .ornament::before, .ornament::after {
+      content: "";
+      height: 1px;
+      flex: 1;
+      background: linear-gradient(90deg, transparent, var(--gold));
+    }
+    .ornament::after { transform: rotate(180deg); }
+    .prize-panel {
+      text-align: center;
+      margin: 0 auto 24px;
+      color: var(--gold-light);
+      font-size: clamp(16px, 2.4vw, 22px);
+    }
+    .prize-panel strong {
+      display: inline-block;
+      margin-left: 8px;
+      color: white;
+      font-size: 1.2em;
+    }
+    .winner-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+      gap: 14px;
+    }
+    .winner-card {
+      position: relative;
+      overflow: hidden;
+      padding: 18px 20px 17px;
+      border: 1px solid rgba(243,207,121,.72);
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(255,250,240,.98), rgba(255,237,199,.96));
+      color: var(--ink);
+      box-shadow: 0 10px 26px rgba(0,0,0,.2);
+      animation: rise .55s both;
+    }
+    .winner-card::after {
+      content: "✦";
+      position: absolute;
+      right: 12px;
+      top: 4px;
+      color: rgba(160,103,30,.16);
+      font-size: 56px;
+    }
+    .winner-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 9px;
+      color: #87551e;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .number {
+      width: 31px;
+      height: 31px;
+      border-radius: 50%;
+      display: inline-grid;
+      place-items: center;
+      color: var(--wine-dark);
+      background: linear-gradient(135deg, #ffe9a6, #d9a94f);
+      font-weight: 800;
+    }
+    .winner-name {
+      font-size: clamp(19px, 2.5vw, 24px);
+      line-height: 1.4;
+      font-weight: 800;
+      color: #511720;
+      overflow-wrap: anywhere;
+    }
+    .winner-detail {
+      margin-top: 6px;
+      font-size: 14px;
+      line-height: 1.55;
+      color: #674d43;
+      overflow-wrap: anywhere;
+    }
+    .winner-prize {
+      margin-top: 10px;
+      padding-top: 9px;
+      border-top: 1px solid rgba(104,27,36,.16);
+      color: #895b1f;
+      font-weight: 800;
+    }
+    .empty, .error {
+      text-align: center;
+      padding: 32px 20px;
+      border: 1px solid rgba(243,207,121,.6);
+      border-radius: 16px;
+      background: rgba(255,255,255,.09);
+      line-height: 1.7;
+    }
+    .actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 28px;
+      flex-wrap: wrap;
+    }
+    button {
+      border: 1px solid var(--gold);
+      border-radius: 999px;
+      padding: 11px 22px;
+      color: var(--wine-dark);
+      background: linear-gradient(135deg, #ffedb6, #d9a94f);
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    button.secondary {
+      color: var(--cream);
+      background: transparent;
+    }
+    footer {
+      margin-top: 30px;
+      text-align: center;
+      color: rgba(255,240,189,.78);
+      font-size: 13px;
+    }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(18px) scale(.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @media (max-width: 600px) {
+      .page { padding-top: 28px; }
+      .winner-grid { grid-template-columns: 1fr; }
+    }
+    @media print {
+      body { background: white; color: black; }
+      body::before, body::after, .actions { display: none; }
+      .page { width: 100%; padding: 0; }
+      h1, .subtitle, .eyebrow, footer { color: black; text-shadow: none; }
+      .winner-card { break-inside: avoid; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <p class="eyebrow">LUCKY DRAW · TUH 2026</p>
+      <h1>ประกาศรายชื่อผู้ได้รับรางวัล</h1>
+      <p class="subtitle">งานเลี้ยงส่งท้ายปีเก่า ต้อนรับปีใหม่ ประจำปี 2569</p>
+      <div class="ornament">✧ ✦ ✧</div>
+    </header>
+
+    <div class="prize-panel" id="prizePanel"></div>
+    <section id="winnerArea" class="winner-grid" aria-live="polite"></section>
+
+    <div class="actions">
+      <button type="button" onclick="window.print()">พิมพ์รายชื่อ</button>
+      <button type="button" class="secondary" onclick="window.close()">ปิดหน้านี้</button>
+    </div>
+
+    <footer>ขอแสดงความยินดีกับผู้ได้รับรางวัลทุกท่าน</footer>
+  </main>
+
+  <script>
+    function escapeHTML(value) {
+      return String(value ?? "").replace(/[&<>"']/g, character => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      })[character]);
+    }
+
+    function formatMoney(value) {
+      const number = Number(value);
+      if (!Number.isFinite(number)) return escapeHTML(value);
+      return number.toLocaleString("th-TH") + " บาท";
+    }
+
+    function loadWinners() {
+      const area = document.getElementById("winnerArea");
+      const prizePanel = document.getElementById("prizePanel");
+
+      let winners;
+      try {
+        winners = JSON.parse(sessionStorage.getItem("creditData") || "null");
+      } catch (error) {
+        area.className = "error";
+        area.textContent = "ไม่สามารถอ่านข้อมูลรายชื่อผู้ได้รับรางวัลได้";
+        return;
+      }
+
+      if (!Array.isArray(winners) || winners.length === 0) {
+        area.className = "empty";
+        area.textContent = "ไม่พบข้อมูลผู้ได้รับรางวัล กรุณากลับไปหน้าจับรางวัลแล้วกด “เปิดหน้าเครดิต” อีกครั้ง";
+        return;
+      }
+
+      const prizeValue = winners[0].prizeValue;
+      if (prizeValue !== undefined && prizeValue !== null && prizeValue !== "") {
+        prizePanel.innerHTML = 'มูลค่ารางวัล <strong>' + formatMoney(prizeValue) + '</strong>';
+      }
+
+      area.innerHTML = winners.map((person, index) => {
+        const fullName = [person.firstName, person.lastName].filter(Boolean).join(" ") || "ไม่พบชื่อ";
+        const details = [
+          person.position,
+          person.division ? "สังกัด " + person.division : "",
+          person.department ? "หน่วยงาน " + person.department : ""
+        ].filter(Boolean).join(" · ");
+
+        return `
+          <article class="winner-card" style="animation-delay:${Math.min(index * 70, 700)}ms">
+            <div class="winner-top">
+              <span class="number">${index + 1}</span>
+              <span>ผู้โชคดี</span>
+            </div>
+            <div class="winner-name">${escapeHTML(fullName)}</div>
+            ${details ? `<div class="winner-detail">${escapeHTML(details)}</div>` : ""}
+            <div class="winner-prize">🎁 ได้รับรางวัล ${formatMoney(prizeValue)}</div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    loadWinners();
+  </script>
+</body>
+</html>
