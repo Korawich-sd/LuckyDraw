@@ -614,7 +614,7 @@ body {
   }
 }
 
-.results-container {
+/* .results-container {
   display: block !important;
   width: 100%;
 }
@@ -635,4 +635,4 @@ body {
   visibility: visible !important;
   opacity: 1 !important;
   cursor: pointer;
-}
+} */
