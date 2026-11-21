@@ -221,7 +221,7 @@
         // ป้องกันการกดซ้ำ
         if (saveButton) {
           saveButton.disabled = true;
-          saveButton.textContent = "กำลังอัปโหลด...";
+          saveButton.textContent = "กำลังบันทึก...";
         }
 
         // ส่ง CSV ไป Google Sheets
@@ -565,14 +565,10 @@
 
     // ========= ฟังก์ชันล้างข้อมูล ========= //
     function clearData() {
-      // document.querySelector('.results').innerHTML = '';
-      selectedData = [];
+      selectedStaffData = [];
+
       document.getElementById('boxshow').style.display = 'none';
       document.getElementById('boxcontent').innerHTML = '';
-      document.getElementById('csvFile').value = '';
-      document.getElementById('totallist').value = '';
-      document.getElementById('prizeValue').value = '';
-      document.getElementById('downloadButtons').style.display = 'none';
     }
 
   </script>
